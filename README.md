@@ -9,7 +9,7 @@ Monitor_resources.sh runs as a service acting as following:
     a. CPU reaches 90% utilization
     b. RAM reaches 90% utilization
     c. The webpage (Ngninx default) is unreachable on localhost
-    d. The webpage is unreachable via Elastic IP (public)
+    d. Disk usage is above 90%
     e. State of the alert triggered goes back to the normal
 
 In order to act as a monitoring tool, the check is triggered once a second.
@@ -18,5 +18,5 @@ In order to act as a monitoring tool, the check is triggered once a second.
 
 # Playbook
 
-In order to keep the Elastic IP in secret, no line is added in inventory and the initial command is performed with the plain address, which is additionally kept in Vault-encrypted secrets.yml
+In order to keep the Elastic IP it's kept in Vault-encrypted secrets.yml  
 Additionally, stress CLI tool is installed on the host in order to perform stress tests which trigger the loggable activity.
