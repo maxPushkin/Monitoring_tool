@@ -1,0 +1,86 @@
+- name: Setting up logging
+  hosts: all
+  vars_files:
+    - secrets.yml
+  become: yes
+
+  tasks:
+    - name: Run apt-get update
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install the latest version of NGINX
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+    
+    - name: Start nginx
+      service: 
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create the log file
+      ansible.builtin.file:
+        path: /var/log/monitor_resources
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Add environment variable to /etc/environment
+      lineinfile:
+        path: /etc/environment
+        line: 'ELASTIC_IP={{ elastic_IP }}'
+
+    - name: Create monitoring directory
+      ansible.builtin.file:
+        path: /home/ec2-user/monitoring
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+      
+    - name: Copy the monitoring script to the target
+      copy:
+        src: ./monitor_resources.sh
+        dest: /home/ec2-user/monitoring/monitor_resources.sh
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create a systemd service file for monitoring script
+      copy:
+        content: |
+          [Unit]
+          Description=Resource Monitor
+
+          [Service]
+          ExecStart=/bin/bash /home/ec2-user/monitoring/monitor_resources.sh
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/resource-monitor.service
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start the monitoring service
+      systemd:
+        name: resource-monitor
+        enabled: yes
+        state: started
+
+    - name: Install stress utility
+      ansible.builtin.apt:
+        name: stress
+        state: latest
+       
