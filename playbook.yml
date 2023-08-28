@@ -36,7 +36,7 @@
 
     - name: Create monitoring directory
       ansible.builtin.file:
-        path: /home/ec2-user/monitoring
+        path: /home/ubuntu/monitoring
         state: directory
         owner: root
         group: root
@@ -46,7 +46,7 @@
     - name: Copy the monitoring script to the target
       copy:
         src: ./monitor_resources.sh
-        dest: /home/ec2-user/monitoring/monitor_resources.sh
+        dest: /home/ubuntu/monitoring/monitor_resources.sh
         owner: root
         group: root
         mode: '0755'
