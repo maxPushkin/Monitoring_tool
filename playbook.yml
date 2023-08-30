@@ -58,7 +58,7 @@
           Description=Resource Monitor
 
           [Service]
-          ExecStart=/bin/bash /home/ec2-user/monitoring/monitor_resources.sh
+          ExecStart=/bin/bash /home/ubuntu/monitoring/monitor_resources.sh
           Restart=always
           User=root
 
